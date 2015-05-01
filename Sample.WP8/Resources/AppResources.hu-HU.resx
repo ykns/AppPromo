@@ -126,12 +126,12 @@
     <comment>Controls the Language and ensures that the font for all elements in the RootFrame aligns with the app's language. Set to the language code of this resource file's language.</comment>
   </data>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>AZ ÉN-M ALKALMAZÁS</value>
+    <value>AZ ÉN ALKALMAZÁSOM</value>
   </data>
   <data name="AppBarButtonText" xml:space="preserve">
-    <value>Add hozzá</value>
+    <value>hozzáad</value>
   </data>
   <data name="AppBarMenuItemText" xml:space="preserve">
-    <value>Étlap cikk</value>
+    <value>menüpont</value>
   </data>
 </root>

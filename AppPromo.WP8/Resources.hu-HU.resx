@@ -118,6 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="RateAppPrompt" xml:space="preserve">
-    <value>Úgy néz ki, már használ a app egy darabig most, és mi szeretne hallani meg észrevételeit. Szeretne arány a app, vagy visszajelzést?</value>
+    <value>Úgy tűnik, egy ideje már használja a programot, és mi szeretnénk megismerni a véleményét. Szeretné értékelni a programot vagy visszajelzést küldeni?</value>
   </data>
 </root>
