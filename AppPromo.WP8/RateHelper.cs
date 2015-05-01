@@ -148,7 +148,8 @@ namespace AppPromo
             marketplaceReviewTask.Show(); 
             #endif
             #if WIN_RT
-            await Launcher.LaunchUriAsync(new Uri("ms-windows-store:reviewapp?appid=" + CurrentApp.AppId));
+            var packageFamilyName = Package.Current.Id.FamilyName;
+            await Launcher.LaunchUriAsync(new Uri("ms-windows-store:PDP?PFN=" + packageFamilyName));
             #endif
         }
         #pragma warning restore 1998
