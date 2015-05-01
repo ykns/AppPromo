@@ -272,7 +272,7 @@ namespace SampleCS.Win8.Common
             this._layoutAwareControls.Add(control);
 
             // Set the initial visual state of the control
-            VisualStateManager.GoToState(control, DetermineVisualState(ApplicationView.Value), false);
+            VisualStateManager.GoToState(control, DetermineVisualState(), false);
         }
 
         private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
@@ -303,19 +303,28 @@ namespace SampleCS.Win8.Common
                 Window.Current.SizeChanged -= this.WindowSizeChanged;
             }
         }
-
-        /// <summary>
-        /// Translates <see cref="ApplicationViewState"/> values into strings for visual state
-        /// management within the page.  The default implementation uses the names of enum values.
-        /// Subclasses may override this method to control the mapping scheme used.
-        /// </summary>
-        /// <param name="viewState">View state for which a visual state is desired.</param>
-        /// <returns>Visual state name used to drive the
-        /// <see cref="VisualStateManager"/></returns>
-        /// <seealso cref="InvalidateVisualState"/>
-        protected virtual string DetermineVisualState(ApplicationViewState viewState)
+        
+        protected virtual string DetermineVisualState()
         {
-            return viewState.ToString();
+            string visualState = "FullScreenLandscape";
+            var windowWidth = Window.Current.Bounds.Width;
+            var windowHeight = Window.Current.Bounds.Height;
+            if (windowWidth <= 500)
+            {
+                visualState = "Snapped" + "_Detail";
+            }
+            else if (windowWidth <= 1366)
+            {
+                if (windowWidth < windowHeight)
+                {
+                    visualState = "FullScreenPortrait" + "_Detail";
+                }
+                else
+                {
+                    visualState = "FilledOrNarrow";
+                }
+            }
+            return visualState;
         }
 
         /// <summary>
@@ -331,7 +340,7 @@ namespace SampleCS.Win8.Common
         {
             if (this._layoutAwareControls != null)
             {
-                string visualState = DetermineVisualState(ApplicationView.Value);
+                string visualState = DetermineVisualState();
                 foreach (var layoutAwareControl in this._layoutAwareControls)
                 {
                     VisualStateManager.GoToState(layoutAwareControl, visualState, false);
