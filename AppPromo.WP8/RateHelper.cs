@@ -96,7 +96,10 @@ namespace AppPromo
             return Resources.ResourceManager.GetString(key);
             #endif
             #if WIN_RT
-            if (resourceLoader == null) { resourceLoader = new ResourceLoader("AppPromo/Resources"); }
+            if (resourceLoader == null) 
+            { 
+                resourceLoader = ResourceLoader.GetForCurrentView("AppPromo/Resources");
+            }
             return resourceLoader.GetString(key);
             #endif
         }
