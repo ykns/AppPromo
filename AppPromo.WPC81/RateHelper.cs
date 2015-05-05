@@ -25,14 +25,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-
-#if WINDOWS_PHONE
-using Microsoft.Phone.Tasks;
-using System.IO.IsolatedStorage;
-using System.Windows;
-#endif
-
-#if WIN_RT
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -43,23 +35,16 @@ using Windows.ApplicationModel;
 using Windows.Foundation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Store;
-#endif
 
 namespace AppPromo
 {
     internal static class PlatformHelper
-    {
-        #if WIN_RT
+    {        
         static private ResourceLoader resourceLoader;
-        #endif
+     
         #pragma warning disable 1998 // The async Task keeps the signature identical between platforms.
         static public async Task<bool> AskOkCancel(string message, string title)
-        {
-            #if WINDOWS_PHONE
-            var result = MessageBox.Show(message, title, MessageBoxButton.OKCancel);
-            return result == MessageBoxResult.OK;
-            #endif
-            #if WIN_RT
+        {            
             var dlg = new MessageDialog(message, title);
             dlg.Commands.Add(new UICommand(ReadResourceString("OK"), null, true));
             dlg.Commands.Add(new UICommand(ReadResourceString("Cancel"), null, false));
@@ -75,43 +60,27 @@ namespace AppPromo
 				//	this may happen if any other modal window is shown at the moment (ie, Windows query about running application background task)
 			}
 
-			return result;
-            #endif
+			return result;            
         }
         #pragma warning restore 1998
 
         static public bool HasSetting(string key)
-        {
-            #if WINDOWS_PHONE
-            return IsolatedStorageSettings.ApplicationSettings.Contains(key);
-            #endif
-            #if WIN_RT
+        {            
             return ApplicationData.Current.RoamingSettings.Values.ContainsKey(key);
-            #endif
         }
 
         static public string ReadResourceString(string key)
         {
-            #if WINDOWS_PHONE
-            return Resources.ResourceManager.GetString(key);
-            #endif
-            #if WIN_RT
             if (resourceLoader == null) 
             { 
                 resourceLoader = ResourceLoader.GetForCurrentView("AppPromo/Resources");
             }
             return resourceLoader.GetString(key);
-            #endif
         }
 
         static public T ReadSetting<T>(string key)
-        {
-            #if WINDOWS_PHONE
-            return (T)IsolatedStorageSettings.ApplicationSettings[key];
-            #endif
-            #if WIN_RT
+        {            
             return (T)ApplicationData.Current.RoamingSettings.Values[key];
-            #endif
         }
 
         static public T ReadSetting<T>(string key, T defaultValue)
@@ -127,54 +96,30 @@ namespace AppPromo
         }
 
         static public bool RemoveSetting(string key)
-        {
-            #if WINDOWS_PHONE
-            var removed = IsolatedStorageSettings.ApplicationSettings.Remove(key);
-            IsolatedStorageSettings.ApplicationSettings.Save();
-            #endif
-
-            #if WIN_RT
+        {            
             var removed = ApplicationData.Current.RoamingSettings.Values.Remove(key);
-            #endif
 
             return removed;
         }
 
         #pragma warning disable 1998 // The async Task keeps the signature identical between platforms.
         static public async Task ShowRatingUI()
-        {
-            #if WINDOWS_PHONE
-            var marketplaceReviewTask = new MarketplaceReviewTask(); 
-            marketplaceReviewTask.Show(); 
-            #endif
-            #if WIN_RT
+        {            
             var packageFamilyName = Package.Current.Id.FamilyName;
             await Launcher.LaunchUriAsync(new Uri("ms-windows-store:PDP?PFN=" + packageFamilyName));
-            #endif
         }
         #pragma warning restore 1998
 
         static public void WriteSetting<T>(string key, T value)
-        {
-            #if WINDOWS_PHONE
-            IsolatedStorageSettings.ApplicationSettings[key] = value;
-            IsolatedStorageSettings.ApplicationSettings.Save();
-            #endif
-            #if WIN_RT
+        {            
             ApplicationData.Current.RoamingSettings.Values[key] = value;
-            #endif
         }
 
         static public bool IsInDesignMode
         {
             get
-            {
-                #if WINDOWS_PHONE
-                return DesignerProperties.IsInDesignTool;
-                #endif
-                #if WIN_RT
+            {                
                 return DesignMode.DesignModeEnabled;
-                #endif
             }
         }
     }
@@ -252,22 +197,10 @@ namespace AppPromo
     {
         #region Constants
         private const string MESSAGE_KEY = "RateAppPrompt";
-        #if WINDOWS_PHONE_APP
-        private const string FIRST_RUN_KEY = "WP.RateFirstRun";
-        private const string RUNS_COUNT_KEY = "WP.RateRunsCount";
-        private const string SHOWN_FOR_DAYS_KEY = "WP.RateShownForDays";
-        private const string SHOWN_FOR_RUNS_KEY = "WP.RateShownForRuns";
-        #elif WINDOWS_APP
-        private const string FIRST_RUN_KEY = "W8.RateFirstRun";
-        private const string RUNS_COUNT_KEY = "W8.RateRunsCount";
-        private const string SHOWN_FOR_DAYS_KEY = "W8.RateShownForDays";
-        private const string SHOWN_FOR_RUNS_KEY = "W8.RateShownForRuns";
-        #else
         private const string FIRST_RUN_KEY = "RateFirstRun";
         private const string RUNS_COUNT_KEY = "RateRunsCount";
         private const string SHOWN_FOR_DAYS_KEY = "RateShownForDays";
         private const string SHOWN_FOR_RUNS_KEY = "RateShownForRuns";
-        #endif
         #endregion // Constants
 
         #region Member Variables
@@ -380,19 +313,8 @@ namespace AppPromo
             PlatformHelper.RemoveSetting(SHOWN_FOR_RUNS_KEY);
             PlatformHelper.RemoveSetting(SHOWN_FOR_DAYS_KEY);
         }
-
-        #if WINDOWS_PHONE
-        /// <summary>
-        /// Checks to see whether it's time to show a reminder and if so, shows it.
-        /// </summary>
-        /// <returns>
-        /// A task that yields the result, a <see cref="RateReminderResult"/>. 
-        /// </returns>
-        public async Task<RateReminderResult> TryReminderAsync()
-        #endif
-        #if WIN_RT
-        internal async Task<RateReminderResult> InnerTryReminderAsync()
-        #endif
+                
+        internal async Task<RateReminderResult> InnerTryReminderAsync()        
         {
             int runs = 0;
             int days = 0;
@@ -445,7 +367,7 @@ namespace AppPromo
             return result;
         }
 
-        #if WIN_RT
+        
         /// <summary>
         /// Checks to see whether it's time to show a reminder and if so, shows it.
         /// </summary>
@@ -455,8 +377,7 @@ namespace AppPromo
         public IAsyncOperation<RateReminderResult> TryReminderAsync()
         {
             return InnerTryReminderAsync().AsAsyncOperation();
-        }
-        #endif
+        }        
         #endregion // Public Methods
 
         #region Public Properties

@@ -25,15 +25,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-
-#if WINDOWS_PHONE
-using Microsoft.Phone.Tasks;
-using System.IO.IsolatedStorage;
-using System.Windows;
-using System.Windows.Controls;
-#endif
-
-#if WIN_RT
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -43,7 +34,7 @@ using Windows.Storage;
 using Windows.System;
 using Windows.ApplicationModel;
 using System.Runtime.InteropServices.WindowsRuntime;
-#endif
+
 
 namespace AppPromo
 {
@@ -88,12 +79,7 @@ namespace AppPromo
                 // Try to show reminder?
                 if (TryReminderOnLoad)
                 {
-                    #if WINDOWS_PHONE
-                        var t = await rateHelper.TryReminderAsync();
-                    #endif
-                    #if WIN_RT
-                        var t = await rateHelper.InnerTryReminderAsync();
-                    #endif
+                    var t = await rateHelper.InnerTryReminderAsync();
                 }
             }
         }
@@ -108,24 +94,13 @@ namespace AppPromo
             rateHelper.ResetCounters();
         }
 
-        #if WINDOWS_PHONE
-        /// <summary>
-        /// Checks to see whether it's time to show a reminder and if so, shows it.
-        /// </summary>
-        /// <returns>
-        /// A task that yields the result, a <see cref="RateReminderResult"/>. 
-        /// </returns>
-        public Task<RateReminderResult> TryReminderAsync()
-        #endif
-        #if WIN_RT
         /// <summary>
         /// Checks to see whether it's time to show a reminder and if so, shows it.
         /// </summary>
         /// <returns>
         /// An asynchronous operation that yields the result, a <see cref="RateReminderResult"/>. 
         /// </returns>
-        public IAsyncOperation<RateReminderResult> TryReminderAsync()
-        #endif
+        public IAsyncOperation<RateReminderResult> TryReminderAsync()        
         {
             // Use helper
             return rateHelper.TryReminderAsync();
