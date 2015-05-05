@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleCS.Win8", "SampleCS.W
 EndProject
 Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "SampleJS.Win8", "SampleJS.Win8\SampleJS.Win8.jsproj", "{C1DDC941-5F0A-4A0E-A8D4-D3E262E547FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppPromo.WPC81", "AppPromo.WPC81\AppPromo.WPC81.csproj", "{18C975F8-6956-4C48-9522-672537EB9E2B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppPromo.WRC81", "AppPromo.WPC81\AppPromo.WRC81.csproj", "{18C975F8-6956-4C48-9522-672537EB9E2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
