@@ -1,4 +1,5 @@
-﻿#region License
+﻿//#define ALWAYS_SHOW
+#region License
 /******************************************************************************
  * COPYRIGHT © MICROSOFT CORP. 
  * MICROSOFT LIMITED PERMISSIVE LICENSE (MS-LPL)
@@ -35,9 +36,16 @@ using Windows.ApplicationModel;
 using Windows.Foundation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Store;
+using Windows.Security.ExchangeActiveSyncProvisioning;
 
 namespace AppPromo
 {
+    public enum PlatformType
+    {
+        Windows,
+        WindowsPhone
+    }
+
     internal static class PlatformHelper
     {        
         static private ResourceLoader resourceLoader;
@@ -104,15 +112,39 @@ namespace AppPromo
 
         #pragma warning disable 1998 // The async Task keeps the signature identical between platforms.
         static public async Task ShowRatingUI()
-        {            
-            var packageFamilyName = Package.Current.Id.FamilyName;
-            await Launcher.LaunchUriAsync(new Uri("ms-windows-store:PDP?PFN=" + packageFamilyName));
+        {
+            var platformType = GetPlatformType();
+            var uri = default(Uri);
+            if (platformType == PlatformType.Windows)
+            {
+                var packageFamilyName = Package.Current.Id.FamilyName;
+                uri = new Uri(string.Format("ms-windows-store:PDP?PFN={0}", packageFamilyName));
+                
+            }
+            else
+            {
+                var appId = CurrentApp.AppId;
+                uri = new Uri(string.Format("ms-windows-store:reviewapp?appid={0}", appId));
+            }
+
+            await Launcher.LaunchUriAsync(uri);
         }
         #pragma warning restore 1998
 
         static public void WriteSetting<T>(string key, T value)
         {            
             ApplicationData.Current.RoamingSettings.Values[key] = value;
+        }
+
+        static public PlatformType GetPlatformType()
+        {
+            var eas = new EasClientDeviceInformation();
+            if (eas.OperatingSystem.ToLowerInvariant() == "windows")
+            {
+                return PlatformType.Windows;
+            }
+
+            return PlatformType.WindowsPhone;
         }
 
         static public bool IsInDesignMode
@@ -320,6 +352,10 @@ namespace AppPromo
             int days = 0;
             bool reminderShown = false;
             bool ratingShown = false;
+
+#if ALWAYS_SHOW
+            ratingShown = await ShowReminderAsync();
+#endif // ALWAYS_SHOW
 
             // If the runs reminder is enabled and has not been shown, see if we need to show it
             if ((RunsBeforeReminder > 0) && (!PlatformHelper.ReadSetting<bool>(SHOWN_FOR_RUNS_KEY, false)))
